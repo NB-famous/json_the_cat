@@ -1,47 +1,36 @@
 const request = require('request');
-let args = process.argv.slice(2);
 
-//console.log(args[0])
+// let breedName = 'Siberian';
 
-let value = args[0];
-let idCode = value.substr(0, 4);
+const fetchBreedDescription = (breedName, callback) => {
 
+  let idCode = breedName.substr(0, 4);
+  let url = `https://api.thecatapi.com/v1/images/search?breed_ids=${idCode}`;
 
+  request(url, (err, response, body) => {
 
-let catType = `https://api.thecatapi.com/v1/images/search?breed_ids=${idCode}`;
-
-request(catType,(err, resp, body) => {
-
-  if (err) {
-    console.log(err);
+    if (err) {
+    console.log('Error fetch details:', err);
+    callback(err, null);
     return;
-  }
-    
-  // use this to parse string to object ///////
-  const data = JSON.parse(body);
+    }
 
-  //console.log(data);
-  //console.log(typeof data);
+    const data = JSON.parse(body);
+
+    if (data.length === 0) {
+    return "This cat doesn't exist!!!!!\nAre you even a cat lover?\nPlease Try Again"
+    }
+    desc = data[0].breeds[0].description;
 
 
-  if (data.length === 0) {
-
-    return console.log("This cat doesn't exist!!!!!\nAre you even a cat lover?\nPlease Try Again");
-
-  }
-    
-
-  console.log(data[0].breeds);
-    
-});
+    callback(err, desc);
 
 
 
+  });
 
-//Note: JavaScript object, we need to convert the string version of it into an object
-//Note:  this is called deserialization and we can do this by "parsing" the string.
+}
 
+module.exports = {fetchBreedDescription}
 
-// use JSON.parse to convert the JSON string into an actual object.
-// Use this inside the call back function
 
